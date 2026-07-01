@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBK Déménagement — Estimateur & Réservation</title>
+<style>
+body{margin:0;padding:16px;background:#faf8f3;}
+#ibk-widget{max-width:600px;margin:0 auto;font-family:'Segoe UI',system-ui,sans-serif;}
+#ibk-widget *{box-sizing:border-box;}
+#ibk-widget .iw-header{background:linear-gradient(135deg,#d2601f 0%,#0f2a4a 100%);color:#fff;border-radius:14px;padding:20px 18px;margin-bottom:14px;}
+#ibk-widget .iw-header h2{margin:0 0 4px;font-size:1.2rem;}
+#ibk-widget .iw-header p{margin:0;font-size:.84rem;opacity:.85;}
+#ibk-widget .iw-badges{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+#ibk-widget .iw-badge{background:rgba(255,255,255,.13);border:1px solid #f2a35c;color:#ffd9b0;font-size:.72rem;padding:3px 9px;border-radius:99px;}
+#ibk-widget .iw-card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #e5ddd0;}
+#ibk-widget .iw-card h3{font-size:.93rem;margin:0 0 12px;color:#0f2a4a;display:flex;align-items:center;gap:8px;}
+#ibk-widget .iw-num{background:#d2601f;color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;}
+#ibk-widget label{display:block;font-size:.78rem;color:#6b6b66;margin-bottom:5px;margin-top:10px;}
+#ibk-widget input[type=text],#ibk-widget input[type=tel],#ibk-widget input[type=email],#ibk-widget select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:10px;font-size:.9rem;background:#fcfcfa;font-family:inherit;}
+#ibk-widget input:focus,#ibk-widget select:focus{outline:2px solid #d2601f;border-color:#d2601f;}
+#ibk-widget .iw-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+#ibk-widget .iw-choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+#ibk-widget .iw-ch{border:1.5px solid #e3ddc9;border-radius:10px;padding:10px 8px;text-align:center;font-size:.82rem;cursor:pointer;background:#fff;}
+#ibk-widget .iw-ch.on{border-color:#d2601f;background:#fff3ec;color:#a04410;font-weight:600;}
+#ibk-widget .iw-opt{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f2eee0;font-size:.87rem;}
+#ibk-widget .iw-opt:last-child{border-bottom:none;}
+#ibk-widget .iw-opt input{accent-color:#d2601f;width:auto;}
+#ibk-widget .obj-cat{font-size:.78rem;font-weight:700;color:#0f2a4a;margin:12px 0 6px;text-transform:uppercase;letter-spacing:.5px;}
+#ibk-widget .obj-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+#ibk-widget .obj-item{border:1.5px solid #e3ddc9;border-radius:10px;padding:8px 10px;font-size:.82rem;cursor:pointer;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:6px;}
+#ibk-widget .obj-item.on{border-color:#d2601f;background:#fff3ec;}
+#ibk-widget .obj-item .obj-name{flex:1;}
+#ibk-widget .obj-qty{display:none;align-items:center;gap:4px;}
+#ibk-widget .obj-item.on .obj-qty{display:flex;}
+#ibk-widget .obj-qty button{background:#0f2a4a;color:#fff;border:none;border-radius:5px;width:20px;height:20px;font-size:.85rem;cursor:pointer;line-height:1;padding:0;}
+#ibk-widget .obj-qty span{min-width:16px;text-align:center;font-weight:700;color:#0f2a4a;font-size:.85rem;}
+#ibk-widget .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+#ibk-widget .cal-nav button{background:#f7f4ef;border:1px solid #e3ddc9;border-radius:8px;width:32px;height:32px;font-size:1rem;cursor:pointer;color:#0f2a4a;}
+#ibk-widget .cal-nav span{font-weight:600;color:#0f2a4a;font-size:.92rem;text-transform:capitalize;}
+#ibk-widget .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;}
+#ibk-widget .cal-dow{font-size:.67rem;color:#999;padding-bottom:4px;}
+#ibk-widget .cal-day{padding:8px 0;border-radius:8px;font-size:.82rem;cursor:pointer;background:#fff;border:1px solid #f0ece0;}
+#ibk-widget .cal-day.off{color:#ccc;cursor:not-allowed;background:#fafafa;border-color:#fafafa;}
+#ibk-widget .cal-day.today{border-color:#d2601f;}
+#ibk-widget .cal-day:not(.off):hover{border-color:#0f2a4a;}
+#ibk-widget .cal-day.sel{background:#0f2a4a;color:#fff;border-color:#0f2a4a;font-weight:700;}
+#ibk-widget .cal-day.empty{visibility:hidden;}
+#ibk-widget .iw-slots{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+#ibk-widget .iw-slot{border:1.5px solid #e3ddc9;border-radius:10px;padding:10px 6px;text-align:center;font-size:.85rem;cursor:pointer;background:#fff;}
+#ibk-widget .iw-slot.on{background:#0f2a4a;color:#fff;border-color:#0f2a4a;font-weight:600;}
+#ibk-widget .iw-urgent{margin-top:12px;display:flex;align-items:center;gap:10px;background:#fff8f0;border:1px dashed #d2601f;border-radius:10px;padding:10px 12px;font-size:.82rem;color:#7a3a10;}
+#ibk-widget .iw-urgent input{accent-color:#d2601f;width:auto;}
+#ibk-widget .iw-recap{background:#0f2a4a;color:#fff;border-radius:14px;padding:18px;text-align:center;margin-bottom:12px;}
+#ibk-widget .iw-prix{font-size:1.9rem;color:#f2a35c;font-weight:700;margin:4px 0;}
+#ibk-widget .iw-prix small{font-size:.95rem;font-weight:400;color:#fff;}
+#ibk-widget .iw-creneau-box{margin-top:10px;font-size:.84rem;background:rgba(255,255,255,.09);border-radius:8px;padding:8px 10px;}
+#ibk-widget .iw-creneau-box b{color:#f2a35c;}
+#ibk-widget .iw-cta{width:100%;background:#d2601f;color:#fff;border:none;border-radius:12px;padding:14px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:4px;}
+#ibk-widget .iw-cta:hover{background:#b84e10;}
+#ibk-widget .iw-note{font-size:.72rem;color:#999;text-align:center;margin-top:8px;}
+#ibk-widget .iw-trust{display:flex;justify-content:space-around;margin-top:16px;font-size:.72rem;color:#888;text-align:center;}
+#ibk-widget .iw-trust div{flex:1;}
+#ibk-widget .iw-success{display:none;background:#eef6ee;border:1px solid #4caf50;border-radius:14px;padding:20px;text-align:center;margin-bottom:12px;}
+#ibk-widget .iw-success h3{color:#2e7d32;margin:0 0 8px;}
+#ibk-widget .iw-success p{color:#444;margin:0;font-size:.88rem;}
+#ibk-widget .iw-error{display:none;background:#fdecea;border:1px solid #f44336;border-radius:10px;padding:12px;text-align:center;font-size:.85rem;color:#c62828;margin-bottom:10px;}
+#ibk-widget .required-star{color:#d2601f;}
+</style>
+</head>
+<body>
+<div id="ibk-widget">
+  <div class="iw-header">
+    <h2>Estimateur &amp; Réservation de créneau</h2>
+    <p>Obtenez votre tarif indicatif puis choisissez la date et l'heure de votre déménagement.</p>
+    <div class="iw-badges">
+      <span class="iw-badge">7j/7</span>
+      <span class="iw-badge">Urgent 48h</span>
+      <span class="iw-badge">Sans engagement</span>
+    </div>
+  </div>
+  <div class="iw-card">
+    <h3><span class="iw-num">1</span> Vos coordonnées</h3>
+    <div class="iw-row2">
+      <div><label>Nom &amp; Prénom <span class="required-star">*</span></label><input type="text" id="iw-nom" placeholder="ex: Ibrahim KONDO"></div>
+      <div><label>Téléphone <span class="required-star">*</span></label><input type="tel" id="iw-tel" placeholder="ex: 06 12 34 56 78"></div>
+    </div>
+    <div><label>Email <span class="required-star">*</span></label><input type="email" id="iw-email" placeholder="ex: contact@email.fr"></div>
+  </div>
+  <div class="iw-card">
+    <h3><span class="iw-num">2</span> Adresses</h3>
+    <div class="iw-row2">
+      <div><label>Code postal départ <span class="required-star">*</span></label><input type="text" id="iw-cpD" placeholder="ex: 95140" inputmode="numeric" maxlength="5"></div>
+      <div><label>Code postal arrivée <span class="required-star">*</span></label><input type="text" id="iw-cpA" placeholder="ex: 75001" inputmode="numeric" maxlength="5"></div>
+    </div>
+    <div class="iw-row2">
+      <div><label>Adresse départ</label><input type="text" id="iw-adrD" placeholder="ex: 17 bd de la Muette"></div>
+      <div><label>Adresse arrivée</label><input type="text" id="iw-adrA" placeholder="ex: 12 rue de la Paix"></div>
+    </div>
+  </div>
+  <div class="iw-card">
+    <h3><span class="iw-num">3</span> Logement &amp; accès</h3>
+    <label>Type de logement <span class="required-star">*</span></label>
+    <div class="iw-choices" id="iw-types">
+      <div class="iw-ch" data-v="1" data-label="Studio / T1">Studio / T1</div>
+      <div class="iw-ch" data-v="1.4" data-label="T2">T2</div>
+      <div class="iw-ch" data-v="1.8" data-label="T3">T3</div>
+      <div class="iw-ch" data-v="2.4" data-label="T4 et +">T4 et +</div>
+    </div>
+    <div class="iw-row2" style="margin-top:14px;">
+      <div><label>Étage départ</label>
+        <select id="iw-etD">
+          <option value="0">Rez-de-chaussée</option>
+          <option value="0.05">1er–3ème (avec asc.)</option>
+          <option value="0.15">1er–3ème (sans asc.)</option>
+          <option value="0.08">4ème et + (avec asc.)</option>
+          <option value="0.3">4ème et + (sans asc.)</option>
+        </select>
+      </div>
+      <div><label>Étage arrivée</label>
+        <select id="iw-etA">
+          <option value="0">Rez-de-chaussée</option>
+          <option value="0.05">1er–3ème (avec asc.)</option>
+          <option value="0.15">1er–3ème (sans asc.)</option>
+          <option value="0.08">4ème et + (avec asc.)</option>
+          <option value="0.3">4ème et + (sans asc.)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="iw-card">
+    <h3><span class="iw-num">4</span> Options souhaitées</h3>
+    <div class="iw-opt"><input type="checkbox" id="iw-o1" data-c="120" data-label="Emballage de vos biens"><label style="margin:0" for="iw-o1">Emballage de vos biens</label></div>
+    <div class="iw-opt"><input type="checkbox" id="iw-o2" data-c="150" data-label="Monte-charge / monte-meuble"><label style="margin:0" for="iw-o2">Monte-charge / monte-meuble</label></div>
+    <div class="iw-opt"><input type="checkbox" id="iw-o3" data-c="80" data-label="Garde-meuble / stockage"><label style="margin:0" for="iw-o3">Garde-meuble / stockage</label></div>
+    <div class="iw-opt"><input type="checkbox" id="iw-o4" data-c="100" data-label="Nettoyage après déménagement"><label style="margin:0" for="iw-o4">Nettoyage après déménagement</label></div>
+  </div>
+  <div class="iw-card">
+    <h3><span class="iw-num">5</span> Inventaire de vos objets</h3>
+    <p style="font-size:.8rem;color:#888;margin:0 0 8px;">Cliquez sur les objets à déménager, puis ajustez la quantité.</p>
+    <div class="obj-cat">🛋️ Mobilier courant</div>
+    <div class="obj-grid">
+      <div class="obj-item" data-obj="Canapé / salon"><span class="obj-name">Canapé / salon</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Lit double"><span class="obj-name">Lit double</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Lit simple"><span class="obj-name">Lit simple</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Armoire / dressing"><span class="obj-name">Armoire / dressing</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Table à manger"><span class="obj-name">Table à manger</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Bureau"><span class="obj-name">Bureau</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Bibliothèque"><span class="obj-name">Bibliothèque</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+    </div>
+    <div class="obj-cat">📺 Électronique</div>
+    <div class="obj-grid">
+      <div class="obj-item" data-obj="Télévision 40 pouces et moins"><span class="obj-name">Télévision &le;40"</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Télévision 55 pouces"><span class="obj-name">Télévision 55"</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Télévision 65 pouces et plus"><span class="obj-name">Télévision &ge;65"</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+    </div>
+    <div class="obj-cat">🏠 Électroménager</div>
+    <div class="obj-grid">
+      <div class="obj-item" data-obj="Réfrigérateur"><span class="obj-name">Réfrigérateur</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Machine à laver"><span class="obj-name">Machine à laver</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Sèche-linge"><span class="obj-name">Sèche-linge</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Lave-vaisselle"><span class="obj-name">Lave-vaisselle</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Congélateur"><span class="obj-name">Congélateur</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+    </div>
+    <div class="obj-cat">⚠️ Objets lourds / spéciaux</div>
+    <div class="obj-grid">
+      <div class="obj-item" data-obj="Piano"><span class="obj-name">Piano</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Coffre-fort"><span class="obj-name">Coffre-fort</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Billard"><span class="obj-name">Billard</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Jacuzzi / baignoire"><span class="obj-name">Jacuzzi / baignoire</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Cave à vin"><span class="obj-name">Cave à vin</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+    </div>
+    <div class="obj-cat">📦 Divers</div>
+    <div class="obj-grid">
+      <div class="obj-item" data-obj="Vélo / trottinette"><span class="obj-name">Vélo / trottinette</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Matériel de sport"><span class="obj-name">Matériel de sport</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Oeuvres d'art / tableaux"><span class="obj-name">Oeuvres d'art / tableaux</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Cartons nombreux"><span class="obj-name">Cartons (nombreux)</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+      <div class="obj-item" data-obj="Animaux cage aquarium"><span class="obj-name">Animaux (cage/aquarium)</span><div class="obj-qty"><button type="button" class="qty-minus">−</button><span class="qty-val">1</span><button type="button" class="qty-plus">+</button></div></div>
+    </div>
+  </div>
+  <div class="iw-card">
+    <h3><span class="iw-num">6</span> Date et créneau souhaités <span class="required-star">*</span></h3>
+    <div class="cal-nav">
+      <button id="iw-prev" type="button">&#8249;</button>
+      <span id="iw-mois"></span>
+      <button id="iw-next" type="button">&#8250;</button>
+    </div>
+    <div class="cal-grid" id="iw-cal"></div>
+    <div id="iw-slots-wrap" style="display:none;">
+      <label style="margin-top:14px;">Créneau horaire</label>
+      <div class="iw-slots" id="iw-slots"></div>
+    </div>
+    <div class="iw-urgent">
+      <input type="checkbox" id="iw-urg">
+      <label style="margin:0" for="iw-urg">Mission urgente (sous 48h) — je serai contacté en priorité</label>
+    </div>
+  </div>
+  <div class="iw-recap">
+    <div style="font-size:.8rem;opacity:.8;">Estimation IBK Déménagement</div>
+    <div class="iw-prix"><span id="iw-pmin">—</span> € <small>à</small> <span id="iw-pmax">—</span> €<small> HT</small></div>
+    <div style="font-size:.7rem;opacity:.7;">Fourchette indicative −10% / +30% · Devis précis gratuit sur demande</div>
+    <div class="iw-creneau-box" id="iw-recap-cr">Aucun créneau sélectionné.</div>
+  </div>
+  <div class="iw-error" id="iw-error">Veuillez remplir tous les champs obligatoires (*) et choisir une date et un créneau.</div>
+  <button class="iw-cta" id="iw-btn">&#128203; Confirmer ma demande de créneau</button>
+  <div class="iw-note">Sans engagement · Réponse sous 2h en jours ouvrés</div>
+  <div class="iw-trust">
+    <div>&#10003; Devis 100% gratuit</div>
+    <div>&#128737; Assurance Generali</div>
+    <div>&#128197; 7j/7 · Urgent 48h</div>
+  </div>
+  <div class="iw-success" id="iw-success">
+    <h3>&#10003; Demande envoyée avec succès !</h3>
+    <p>Merci <span id="iw-success-nom"></span>, votre demande a bien été transmise à IBK Déménagement.<br>Un conseiller vous contactera très prochainement pour confirmer votre créneau et finaliser votre devis.</p>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+(function(){
+  emailjs.init('9DPUU3egjuBOMRh-V');
+  var MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  var DOW=['L','M','M','J','V','S','D'];
+  var volBase=0,volLabel='',dateOk=null,creneauOk=null;
+  var today=new Date(); today.setHours(0,0,0,0);
+  var vA=today.getFullYear(),vM=today.getMonth();
+  document.getElementById('iw-types').querySelectorAll('.iw-ch').forEach(function(el){
+    el.addEventListener('click',function(){
+      document.getElementById('iw-types').querySelectorAll('.iw-ch').forEach(function(c){c.classList.remove('on');});
+      el.classList.add('on'); volBase=parseFloat(el.dataset.v); volLabel=el.dataset.label; calcPrix();
+    });
+  });
+  document.querySelectorAll('#ibk-widget .obj-item').forEach(function(item){
+    item.querySelector('.obj-name').addEventListener('click',function(){item.classList.toggle('on');});
+    item.querySelector('.qty-minus').addEventListener('click',function(e){
+      e.stopPropagation();
+      var s=item.querySelector('.qty-val'); var v=parseInt(s.textContent);
+      if(v>1) s.textContent=v-1;
+    });
+    item.querySelector('.qty-plus').addEventListener('click',function(e){
+      e.stopPropagation();
+      var s=item.querySelector('.qty-val'); s.textContent=parseInt(s.textContent)+1;
+    });
+  });
+  function getInventaire(){
+    var list=[];
+    document.querySelectorAll('#ibk-widget .obj-item.on').forEach(function(item){
+      list.push(item.querySelector('.qty-val').textContent+'x '+item.dataset.obj);
+    });
+    return list.length>0?list.join(', '):'Aucun objet sélectionné';
+  }
+  function calcPrix(){
+    var cpD=document.getElementById('iw-cpD').value.trim();
+    var cpA=document.getElementById('iw-cpA').value.trim();
+    if(!volBase||cpD.length<2||cpA.length<2){
+      document.getElementById('iw-pmin').textContent='—';
+      document.getElementById('iw-pmax').textContent='—'; return;
+    }
+    var base=350+volBase*180;
+    base+=base*(parseFloat(document.getElementById('iw-etD').value)||0);
+    base+=base*(parseFloat(document.getElementById('iw-etA').value)||0);
+    ['iw-o1','iw-o2','iw-o3','iw-o4'].forEach(function(id){
+      var cb=document.getElementById(id); if(cb.checked) base+=parseFloat(cb.dataset.c||0);
+    });
+    if(document.getElementById('iw-urg').checked) base+=base*0.15;
+    document.getElementById('iw-pmin').textContent=Math.round(base*0.9/10)*10;
+    document.getElementById('iw-pmax').textContent=Math.round(base*1.3/10)*10;
+  }
+  ['iw-cpD','iw-cpA','iw-etD','iw-etA','iw-urg','iw-o1','iw-o2','iw-o3','iw-o4'].forEach(function(id){
+    var el=document.getElementById(id);
+    el.addEventListener('input',calcPrix); el.addEventListener('change',calcPrix);
+  });
+  function renderCal(){
+    document.getElementById('iw-mois').textContent=MOIS[vM]+' '+vA;
+    var g=document.getElementById('iw-cal'); g.innerHTML='';
+    DOW.forEach(function(d){var e=document.createElement('div');e.className='cal-dow';e.textContent=d;g.appendChild(e);});
+    var first=new Date(vA,vM,1); var dec=first.getDay(); dec=dec===0?6:dec-1;
+    for(var i=0;i<dec;i++){var v=document.createElement('div');v.className='cal-day empty';g.appendChild(v);}
+    var nb=new Date(vA,vM+1,0).getDate();
+    for(var j=1;j<=nb;j++){(function(jour){
+      var d=new Date(vA,vM,jour);
+      var el=document.createElement('div'); el.className='cal-day'; el.textContent=jour;
+      if(d<today||d.getDay()===0){el.classList.add('off');}
+      else{
+        if(d.getTime()===today.getTime()) el.classList.add('today');
+        if(dateOk&&d.getTime()===dateOk.getTime()) el.classList.add('sel');
+        el.addEventListener('click',function(){dateOk=d;creneauOk=null;renderCal();renderSlots();majRecap();});
+      }
+      g.appendChild(el);
+    })(j);}
+  }
+  document.getElementById('iw-prev').addEventListener('click',function(){vM--;if(vM<0){vM=11;vA--;}renderCal();});
+  document.getElementById('iw-next').addEventListener('click',function(){vM++;if(vM>11){vM=0;vA++;}renderCal();});
+  var CRENEAUX=['08h–11h','10h–13h','13h–16h','15h–18h'];
+  function renderSlots(){
+    var wrap=document.getElementById('iw-slots-wrap'); var g=document.getElementById('iw-slots');
+    if(!dateOk){wrap.style.display='none';return;}
+    wrap.style.display='block'; g.innerHTML='';
+    CRENEAUX.forEach(function(c){
+      var el=document.createElement('div'); el.className='iw-slot'; el.textContent=c;
+      if(creneauOk===c) el.classList.add('on');
+      el.addEventListener('click',function(){creneauOk=c;renderSlots();majRecap();});
+      g.appendChild(el);
+    });
+  }
+  function majRecap(){
+    var box=document.getElementById('iw-recap-cr');
+    if(dateOk&&creneauOk){
+      var fmt=dateOk.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+      box.innerHTML='Mission souhaitée le <b>'+fmt+'</b><br>Créneau : <b>'+creneauOk+'</b>';
+    } else if(dateOk){
+      var fmt2=dateOk.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+      box.innerHTML='Date : <b>'+fmt2+'</b> — choisissez un créneau ci-dessus';
+    } else { box.textContent='Aucun créneau sélectionné.'; }
+  }
+  document.getElementById('iw-btn').addEventListener('click',function(){
+    var nom=document.getElementById('iw-nom').value.trim();
+    var tel=document.getElementById('iw-tel').value.trim();
+    var email=document.getElementById('iw-email').value.trim();
+    var cpD=document.getElementById('iw-cpD').value.trim();
+    var cpA=document.getElementById('iw-cpA').value.trim();
+    var erreur=document.getElementById('iw-error');
+    if(!nom||!tel||!email||!cpD||!cpA||!volBase||!dateOk||!creneauOk){
+      erreur.style.display='block'; erreur.scrollIntoView({behavior:'smooth',block:'center'}); return;
+    }
+    erreur.style.display='none';
+    var adrD=document.getElementById('iw-adrD').value.trim()||cpD;
+    var adrA=document.getElementById('iw-adrA').value.trim()||cpA;
+    var etD=document.getElementById('iw-etD').options[document.getElementById('iw-etD').selectedIndex].text;
+    var etA=document.getElementById('iw-etA').options[document.getElementById('iw-etA').selectedIndex].text;
+    var options=[];
+    ['iw-o1','iw-o2','iw-o3','iw-o4'].forEach(function(id){
+      var cb=document.getElementById(id); if(cb.checked) options.push(cb.dataset.label);
+    });
+    var urgent=document.getElementById('iw-urg').checked?'Oui — Mission urgente':'Non';
+    var dateFmt=dateOk.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    var pmin=document.getElementById('iw-pmin').textContent;
+    var pmax=document.getElementById('iw-pmax').textContent;
+    var btn=document.getElementById('iw-btn');
+    btn.disabled=true; btn.textContent='Envoi en cours...';
+    emailjs.send('service_tfmocao','template_cs58tum',{
+      nom:nom, telephone:tel, email:email,
+      adresse_depart:adrD+' ('+cpD+')', adresse_arrivee:adrA+' ('+cpA+')',
+      type_logement:volLabel, etage_depart:etD, etage_arrivee:etA,
+      options:options.length>0?options.join(', '):'Aucune',
+      inventaire:getInventaire(), date_mission:dateFmt, creneau:creneauOk,
+      urgent:urgent, prix_min:pmin!=='—'?pmin:'Non calculé', prix_max:pmax!=='—'?pmax:'Non calculé', message:''
+    }).then(function(){
+      document.getElementById('iw-success-nom').textContent=nom;
+      document.getElementById('iw-success').style.display='block';
+      document.getElementById('iw-success').scrollIntoView({behavior:'smooth',block:'center'});
+      btn.style.display='none';
+    }).catch(function(err){
+      btn.disabled=false; btn.textContent='📋 Confirmer ma demande de créneau';
+      erreur.textContent='Une erreur est survenue. Veuillez réessayer ou nous appeler directement.';
+      erreur.style.display='block'; console.error('EmailJS error:',err);
+    });
+  });
+  renderCal();
+})();
+</script>
+</body>
+</html>
